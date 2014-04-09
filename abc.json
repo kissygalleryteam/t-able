@@ -1,0 +1,17 @@
+{
+    "name": "t-able",
+    "comName":"TAble",
+    "version": "0.1",
+    "desc": "",
+    "tag":"table,grid,kissy-mini",
+    "githubName":"akecn",
+    "author": {
+        "name": "阿克",
+        "email": "ake.wgk@taobao.com",
+        "page": ""
+    },
+	"flexComboPort":"81",
+	"reserveServerPort":"8888",
+    "type": "kissy-gallery",
+    "type-url": "http://gallery.kissyui.com/guide"
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>TAble的demo</title>
+    <script src="http://g.tbcdn.cn/kissy/m/0.2.0/mini-full-min.js" charset="utf-8"></script>
+</head>
+<body>
+<h2>TAble的demo</h2>
+<a href="http://m.kissyui.com/" target="_blank">KISSY MINI官方文档</a>
+<script>
+    (function(S) {
+        var debug = ~location.search.indexOf('ks-debug');
+
+        if (debug) {
+            var srcPath = "../../";
+            S.config({
+                debug: debug,
+                packages:[
+                    {
+                        name:"gallery/t-able",
+                        path:srcPath,
+                        charset:"utf-8",
+                        ignorePackageNameInUri:true
+                    }
+                ]
+            });
+        }
+
+        S.use('gallery/t-able/0.1/mini', function (S, TAble) {
+            new TAble();
+        })
+    })(KISSY);
+</script>
+</body>
+</html>
