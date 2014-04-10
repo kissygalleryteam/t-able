@@ -16,10 +16,13 @@ KISSY.add(function(S, Node, Event, XTemplate, DProxy) {
                 template = cfg.template,
                 data = S.merge(cfg, dt);
 
-            this.fire('beforeRender', {
-                data: data,
-                template: template
-            });
+            if(S.isFunction(cfg.adapter)) {
+                data = cfg.adapter(data);
+            }
+
+            if(!template) {
+                return "";
+            }
 
             return new XTemplate(template).render(data);
         }

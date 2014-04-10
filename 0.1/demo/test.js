@@ -324,7 +324,7 @@
 
                         $wrap.parent().append(wrap);
                         LimitFixed(wrap, $wrap);
-                    })
+                    });
                 });
 
                 table.render();

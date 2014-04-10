@@ -15,7 +15,9 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
     function View(columns, data, config) {
         var cfg = this.cfg = S.merge(def, config);
 
+        // 传入父容器。
         this.$parent = $(cfg.parent);
+        // 构造容器。
         this.$wrap = $(cfg.wrap);
 
         this._parseColumnsQueueAndMap(columns);
@@ -113,12 +115,6 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
                 return $el;
             }
             return null;
-        },
-        getUIDByRow: function(row) {
-            var $row = $(row),
-                uid = $row.attr('data-id');
-
-            return uid;
         },
         getColumnByName: function(name) {
             return this.columnsMap[name];

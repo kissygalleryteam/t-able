@@ -6,7 +6,7 @@ KISSY.add(function(S, Node, Event, XTemplate, DProxy) {
         def = {},
         tpl = '<div class="inner-wrap">{html}</div>';
 
-    var tplNest = '<table><tr></tr></table>',
+    var tplNest = '<table class="inner-table"><tr></tr></table>',
         cellTemplate = '<td class="inner-cell cell-{name}" width="{width}"></td>';
 
     function Column(config) {
@@ -26,13 +26,22 @@ KISSY.add(function(S, Node, Event, XTemplate, DProxy) {
             return (columns && columns.length) || 1;
         },
         render: function(data, parent) {
-            var cfg = this.cfg;
+            var cfg = this.cfg,
+                $wrap;
+
+            if(S.isFunction(cfg.adapter)) {
+                data = cfg.adapter(data);
+            }
 
             if(cfg.nested) {
-                this._nestRender(data, parent);
+                $wrap = this._nestRender(data, parent);
             }else {
-                this._render(data, parent);
+                $wrap = this._render(data, parent);
             }
+
+            this.fire('afterRender', {
+                $wrap: $wrap
+            });
         },
         _nestRender: function(data, parent) {
             var self = this,
@@ -46,15 +55,20 @@ KISSY.add(function(S, Node, Event, XTemplate, DProxy) {
             });
 
             $(parent).append($wrap);
+
+            return $wrap;
         },
         _render: function(data, parent) {
             var template = this.template;
 
             if(!template || !data) return "";
 
-            var html = new XTemplate(template).render(data);
+            var html = new XTemplate(template).render(data),
+                $wrap = $(html);
 
-            $(parent).html(html);
+            $(parent).append($wrap);
+
+            return $wrap;
         },
         _createCell: function(column, rowData) {
             var $wrap = $(S.substitute(cellTemplate, {
