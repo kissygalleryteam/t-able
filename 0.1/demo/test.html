@@ -224,124 +224,33 @@
 </div>
 
 <!--以下为表格单元格的模板定义-->
-<script type="text/xtpl" class="J_XTPL" data-name="toggle" data-width="18">
-    <input type="checkbox" value="{{id}}" class="J_Checkbox" />
-</script>
-
-<script type="text/xtpl" class="J_XTPL" data-name="image" data-width="102">
-    <a href="{{detailURL}}" target="_blank"><img src="{{image}}_80x80.jpg?t={{id}}" class="img-thumbnail" alt=""/></a>
-</script>
 
 <script type="text/xtpl" class="J_XTPL" data-name="title" data-width="226" data-group="title">
-    <a href="{{detailURL}}" class="title" target="_blank">
-        {{title.prefix}}{{title.content}}{{title.suffix}}
-    </a>
-    {{@if icons.length>0}}
-    <div class="icon-flow">
-        <div class="icons">
-            {{@each icons}}
-            {{@if xindex<2}}
-            {{@if link}}
-            <a href="{{link}}" target="_blank">
-                {{/if}}
-
-                {{@if type==="vi"}}
-                <i class="vi J_Icon" data-name="{{name}}" data-id="{{id}}">{{text}}</i>
-                {{else}}
-                <img class="icon J_Icon" src="{{icon}}" data-name="{{name}}" data-id="{{id}}"/>
-                {{/if}}
-
-                {{@if link}}
-            </a>
-            {{/if}}
-            {{/if}}
-            {{/each}}
-
-            {{@if icons.length>2}}
-            <i class="caret"></i>
-            <div class="layer">
-                {{@each icons}}
-                {{@if xindex>=2}}
-
-                {{@if link}}
-                <a href="{{link}}" target="_blank">
-                    {{/if}}
-
-                    {{@if type==="vi"}}
-                    <i class="vi J_Icon" data-name="{{name}}" data-id="{{id}}">{{text}}</i>
-                    {{else}}
-                    <img class="icon J_Icon" src="{{icon}}" data-name="{{name}}" data-id="{{id}}"/>
-                    {{/if}}
-
-                    {{@if link}}
-                </a>
-                {{/if}}
-
-                {{/if}}
-                {{/each}}
-            </div>
-            {{/if}}
-        </div>
-    </div>
-    {{@if outerId}}
-    <div class="outer-id">商家编码：{{outerId}}</div>
-    {{/if}}
-    {{/if}}
 </script>
 
 <script type="text/xtpl" class="J_XTPL" data-name="price" data-width="110" data-group="sku">
-    <div class="text-price {{@if price.actual}} text-through{{/if}}">
-        {{@if price.min&&price.max}}
-        {{price.min}} ~ {{price.max}}
-        {{else}}
-        {{price.value}}
-        {{/if}}
-    </div>
-    {{@if price.actual}}
-    <div class="text-actual">
-        {{price.actual}}
-    </div>
-    {{/if}}
 </script>
+
 <script type="text/xtpl" class="J_XTPL" data-name="quantity" data-width="94" data-group="sku">
-    {{quantity.value}}
 </script>
 
 <script type="text/xtpl" class="J_XTPL" data-name="saleQuantity" data-width="90">
-    {{saleQuantity}}
 </script>
 
 <script type="text/xtpl" class="J_XTPL" data-name="status" data-width="90">
-    <span class="text-{{status.type}}">{{status.text}}</span>
+
 </script>
 
 <script type="text/xtpl" class="J_XTPL" data-name="publishTime" data-width="93">
-    {{publishTime}}
+
 </script>
 
 <script type="text/xtpl" class="J_XTPL" data-name="lastModify" data-width="99">
-    {{lastModify}}
+
 </script>
 
 <script type="text/xtpl" class="J_XTPL" data-name="actions" data-width="123">
-    {{@each actions}}
-    {{@if disabled}}
-    <button type="button" disabled class="btn btn-default disabled">{{text}}</button>
-    {{else}}
-    {{@if action==="link"}}
-    <a href="{{url}}" target="_blank" class="btn btn-default">{{text}}</a>
-    {{/if}}
-    {{@if action==="copy"}}
-    <button type="button" class="btn btn-default J_ClipBoard" data-text="{{content}}">{{text}}</button>
-    {{/if}}
-    {{@if action==="confirmURL"}}
-    <button type="button" class="btn btn-default J_Confirm" data-url="{{url}}" data-msg="{{msg}}">{{text}}</button>
-    {{/if}}
-    {{@if action==="alert"}}
-    <button type="button" class="btn btn-default J_Alert" data-msg="{{msg}}">{{text}}</button>
-    {{/if}}
-    {{/if}}
-    {{/each}}
+
 </script>
 
 

@@ -7,7 +7,7 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
         def = {
             wrap: '<table class="ta-wrap"><tbody class="ta-body"></tbody></table>',
             rowTemplate: '<tr id="ta-row-{_id}" data-id="{_id}"></tr>',
-            cellTemplate: '<td class="ta-cell cell-{name}" width="{width}"></td>',
+            cellTemplate: '<td colspan="{colspan}" class="ta-cell cell-{name}" width="{width}"></td>',
             headTemplate: '<thead class="ta-head"></thead>',
             footTemplate: '<tfoot class="ta-foot"></tfoot>'
         };
@@ -126,6 +126,7 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
         _parseColumnsQueueAndMap: function(columns) {
             var queue = [],
                 map = {};
+
             S.each(columns, function(col) {
                 var column = col;
                 if(!(column instanceof Column)) {
@@ -182,13 +183,13 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
         },
         _createCell: function(column, rowData) {
             var cfg = this.cfg,
-                html = column.render(rowData),
                 $wrap = $(S.substitute(cfg.cellTemplate, {
+                    colspan: column.getColspan(),
                     name: column.name,
                     width: column.width
                 }));
 
-            $wrap.append(html);
+            column.render(rowData, $wrap);
 
             column.bindEvent($wrap);
 
