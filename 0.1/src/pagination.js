@@ -35,14 +35,14 @@ KISSY.add(function(S, Node, XTemplate) {
             '</ul>',
         liteTemplate: '<ul class="pagination">' +
             '{{@if isFirst}}' +
-            '<li class="disabled"><span>&laquo;</span></li>' +
+            '<li class="disabled"><span>&laquo; 上一页</span></li>' +
             '{{else}}' +
-            '<li><a href="javascript:;" class="pn" data-value="{{current-1}}">&laquo;</a></li>' +
+            '<li><a href="javascript:;" class="pn" data-value="{{current-1}}">&laquo; 上一页</a></li>' +
             '{{/if}}' +
             '{{@if isLast}}' +
-            '<li class="disabled"><span>&raquo;</span></li>' +
+            '<li class="disabled"><span>下一页 &raquo;</span></li>' +
             '{{else}}' +
-            '<li><a href="javascript:;" class="pn" data-value="{{current+1}}">&raquo;</a></li>' +
+            '<li><a href="javascript:;" class="pn" data-value="{{current+1}}">下一页 &raquo;</a></li>' +
             '{{/if}}' +
             '</ul>'
     };
@@ -71,6 +71,7 @@ KISSY.add(function(S, Node, XTemplate) {
             return new XTemplate(this.template).render(dt);
         },
         getLiteHTML: function(data) {
+            debugger;
             var dt = this.calPageData(data);
             return new XTemplate(this.liteTemplate).render(dt);
         },
