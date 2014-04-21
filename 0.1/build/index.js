@@ -337,10 +337,6 @@ KISSY.add('gallery/t-able/0.1/src/header',function(S, Node, Event, XTemplate, DP
                 data = cfg.adapter(data);
             }
 
-            if(!template) {
-                return "";
-            }
-
             return new XTemplate(template).render(data);
         }
     });
@@ -375,10 +371,6 @@ KISSY.add('gallery/t-able/0.1/src/footer',function(S, Node, Event, XTemplate, DP
                 data = cfg.adapter(data);
             }
 
-            if(!template) {
-                return "";
-            }
-
             return new XTemplate(template).render(data);
         }
     });
@@ -399,10 +391,11 @@ KISSY.add('gallery/t-able/0.1/src/index',function(S, Node, Event, XTemplate, Sto
         idAttribute = '_uid',
         def = {
             wrap: '<table class="ta-wrap"><tbody class="ta-body"></tbody></table>',
-            rowTemplate: '<tr id="ta-row-{_id}" data-id="{_id}"></tr>',
+            rowTemplate: '<tr class="ta-row" id="ta-row-{_id}" data-id="{_id}"></tr>',
             cellTemplate: '<td colspan="{colspan}" class="ta-cell cell-{name}" width="{width}"></td>',
             headTemplate: '<thead class="ta-head"></thead>',
-            footTemplate: '<tfoot class="ta-foot"></tfoot>'
+            footTemplate: '<tfoot class="ta-foot"></tfoot>',
+            emptyTemplate: '<div>没有找到符合条件的结果！</div>'
         };
 
     function View(columns, data, config) {
@@ -442,9 +435,19 @@ KISSY.add('gallery/t-able/0.1/src/index',function(S, Node, Event, XTemplate, Sto
                 $wrap = this.$wrap,
                 $fragment = $(document.createDocumentFragment());
 
-            S.each(data, function(rowData) {
-                $fragment.append(self._createRow(rowData));
-            });
+            if(data.length == 0) {
+                $fragment.append(self._createEmptyRow());
+            }else {
+                S.each(data, function(rowData) {
+                    var $row = self._createRow(rowData)
+                    $fragment.append($row);
+
+                    self.fire('afterRowRender', {
+                        data: rowData,
+                        $row: $row
+                    });
+                });
+            }
 
             $wrap.one('tbody').append($fragment);
 
@@ -476,7 +479,7 @@ KISSY.add('gallery/t-able/0.1/src/index',function(S, Node, Event, XTemplate, Sto
         },
         /**
          * 根据数据和索引去更新指定的表格行。
-         * @param id
+         * @param index
          * @param dt
          */
         updateRowView: function(index, dt) {
@@ -487,17 +490,24 @@ KISSY.add('gallery/t-able/0.1/src/index',function(S, Node, Event, XTemplate, Sto
 
             if(!data) return;
 
-            var $row = this.getRowByData(data);
+            var $row = this.getRowByData(data),
+                $newRow;
 
             if($row) {
                 // 合并数据
                 store.deepMix(data, dt);
 
                 // 构建新行，替换老行
-                var $tr = this._createRow(data);
-                $row.replaceWith($tr);
+                $newRow = this._createRow(data);
+                $row.replaceWith($newRow);
 
             }
+
+            this.fire('afterRowUpdate', {
+                data: data,
+                $row: $newRow,
+                $oldRow: $row
+            });
 
         },
         getRowByData: function(data) {
@@ -583,6 +593,17 @@ KISSY.add('gallery/t-able/0.1/src/index',function(S, Node, Event, XTemplate, Sto
             column.bindEvent($wrap);
 
             return $wrap;
+        },
+        _createEmptyRow: function() {
+            var colspan = S.reduce(this.columns, function(rt, column) {
+                    return rt + column.getColspan();
+                }, 0),
+                html = S.substitute('<tr><td colspan="{colspan}">{html}</td></tr>', {
+                    colspan: colspan,
+                    html: this.cfg.emptyTemplate
+                });
+
+            return $(html);
         }
     });
 
@@ -600,8 +621,12 @@ KISSY.add('gallery/t-able/0.1/src/index',function(S, Node, Event, XTemplate, Sto
  */
 KISSY.add('gallery/t-able/0.1/src/pagination',function(S, Node, XTemplate) {
 
-    var $ = Node.all,
-        tpl = '<ul class="pagination">' +
+    var $ = Node.all;
+
+    var def = {
+        pageSize: 20,
+        padding: 4,
+        template: '<ul class="pagination">' +
             '{{@if isFirst}}' +
             '<li class="disabled"><span>&laquo;</span></li>' +
             '{{else}}' +
@@ -625,7 +650,7 @@ KISSY.add('gallery/t-able/0.1/src/pagination',function(S, Node, XTemplate) {
             '<li><a href="javascript:;" class="pn" data-value="{{current+1}}">&raquo;</a></li>' +
             '{{/if}}' +
             '</ul>',
-        lite = '<ul class="pagination">' +
+        liteTemplate: '<ul class="pagination">' +
             '{{@if isFirst}}' +
             '<li class="disabled"><span>&laquo;</span></li>' +
             '{{else}}' +
@@ -636,16 +661,16 @@ KISSY.add('gallery/t-able/0.1/src/pagination',function(S, Node, XTemplate) {
             '{{else}}' +
             '<li><a href="javascript:;" class="pn" data-value="{{current+1}}">&raquo;</a></li>' +
             '{{/if}}' +
-            '</ul>';
-
-    var def = {
-        pageSize: 20,
-        padding: 4
+            '</ul>'
     };
 
     function Pagination(cfg) {
 
         this.cfg = S.merge(def, cfg);
+
+        this.template = this.cfg.template;
+
+        this.liteTemplate = this.cfg.liteTemplate;
 
     }
 
@@ -660,11 +685,11 @@ KISSY.add('gallery/t-able/0.1/src/pagination',function(S, Node, XTemplate) {
 //        },
         getHTML: function(data) {
             var dt = this.calPageData(data);
-            return new XTemplate(tpl).render(dt);
+            return new XTemplate(this.template).render(dt);
         },
         getLiteHTML: function(data) {
             var dt = this.calPageData(data);
-            return new XTemplate(lite).render(dt);
+            return new XTemplate(this.liteTemplate).render(dt);
         },
         jumpTo: function(value) {
             this.fire('jump', {
@@ -682,11 +707,11 @@ KISSY.add('gallery/t-able/0.1/src/pagination',function(S, Node, XTemplate) {
          * }
          */
         calPageData: function(config) {
-            var cfg = this.cfg,
-                current = config.current * 1,
-                totalRecord = config.totalRecord * 1,
-                pageSize = config.pageSize * 1 || cfg.pageSize,
-                padding = config.padding * 1 || cfg.padding,
+            var cfg = S.merge(this.cfg, config),
+                current = cfg.current * 1,
+                totalRecord = cfg.totalRecord * 1,
+                pageSize = cfg.pageSize * 1,
+                padding = cfg.padding * 1,
                 getData = this._getPageData;
 
             var totalPage = Math.ceil(totalRecord / pageSize);

@@ -4,8 +4,12 @@
  */
 KISSY.add(function(S, Node, XTemplate) {
 
-    var $ = Node.all,
-        tpl = '<ul class="pagination">' +
+    var $ = Node.all;
+
+    var def = {
+        pageSize: 20,
+        padding: 4,
+        template: '<ul class="pagination">' +
             '{{@if isFirst}}' +
             '<li class="disabled"><span>&laquo;</span></li>' +
             '{{else}}' +
@@ -29,7 +33,7 @@ KISSY.add(function(S, Node, XTemplate) {
             '<li><a href="javascript:;" class="pn" data-value="{{current+1}}">&raquo;</a></li>' +
             '{{/if}}' +
             '</ul>',
-        lite = '<ul class="pagination">' +
+        liteTemplate: '<ul class="pagination">' +
             '{{@if isFirst}}' +
             '<li class="disabled"><span>&laquo;</span></li>' +
             '{{else}}' +
@@ -40,16 +44,16 @@ KISSY.add(function(S, Node, XTemplate) {
             '{{else}}' +
             '<li><a href="javascript:;" class="pn" data-value="{{current+1}}">&raquo;</a></li>' +
             '{{/if}}' +
-            '</ul>';
-
-    var def = {
-        pageSize: 20,
-        padding: 4
+            '</ul>'
     };
 
     function Pagination(cfg) {
 
         this.cfg = S.merge(def, cfg);
+
+        this.template = this.cfg.template;
+
+        this.liteTemplate = this.cfg.liteTemplate;
 
     }
 
@@ -64,11 +68,11 @@ KISSY.add(function(S, Node, XTemplate) {
 //        },
         getHTML: function(data) {
             var dt = this.calPageData(data);
-            return new XTemplate(tpl).render(dt);
+            return new XTemplate(this.template).render(dt);
         },
         getLiteHTML: function(data) {
             var dt = this.calPageData(data);
-            return new XTemplate(lite).render(dt);
+            return new XTemplate(this.liteTemplate).render(dt);
         },
         jumpTo: function(value) {
             this.fire('jump', {
@@ -86,11 +90,11 @@ KISSY.add(function(S, Node, XTemplate) {
          * }
          */
         calPageData: function(config) {
-            var cfg = this.cfg,
-                current = config.current * 1,
-                totalRecord = config.totalRecord * 1,
-                pageSize = config.pageSize * 1 || cfg.pageSize,
-                padding = config.padding * 1 || cfg.padding,
+            var cfg = S.merge(this.cfg, config),
+                current = cfg.current * 1,
+                totalRecord = cfg.totalRecord * 1,
+                pageSize = cfg.pageSize * 1,
+                padding = cfg.padding * 1,
                 getData = this._getPageData;
 
             var totalPage = Math.ceil(totalRecord / pageSize);

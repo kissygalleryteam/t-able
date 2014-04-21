@@ -20,10 +20,6 @@ KISSY.add(function(S, Node, Event, XTemplate, DProxy) {
                 data = cfg.adapter(data);
             }
 
-            if(!template) {
-                return "";
-            }
-
             return new XTemplate(template).render(data);
         }
     });

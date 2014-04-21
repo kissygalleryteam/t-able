@@ -6,10 +6,11 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
         idAttribute = '_uid',
         def = {
             wrap: '<table class="ta-wrap"><tbody class="ta-body"></tbody></table>',
-            rowTemplate: '<tr id="ta-row-{_id}" data-id="{_id}"></tr>',
+            rowTemplate: '<tr class="ta-row" id="ta-row-{_id}" data-id="{_id}"></tr>',
             cellTemplate: '<td colspan="{colspan}" class="ta-cell cell-{name}" width="{width}"></td>',
             headTemplate: '<thead class="ta-head"></thead>',
-            footTemplate: '<tfoot class="ta-foot"></tfoot>'
+            footTemplate: '<tfoot class="ta-foot"></tfoot>',
+            emptyTemplate: '<div>没有找到符合条件的结果！</div>'
         };
 
     function View(columns, data, config) {
@@ -49,9 +50,19 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
                 $wrap = this.$wrap,
                 $fragment = $(document.createDocumentFragment());
 
-            S.each(data, function(rowData) {
-                $fragment.append(self._createRow(rowData));
-            });
+            if(data.length == 0) {
+                $fragment.append(self._createEmptyRow());
+            }else {
+                S.each(data, function(rowData) {
+                    var $row = self._createRow(rowData)
+                    $fragment.append($row);
+
+                    self.fire('afterRowRender', {
+                        data: rowData,
+                        $row: $row
+                    });
+                });
+            }
 
             $wrap.one('tbody').append($fragment);
 
@@ -83,7 +94,7 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
         },
         /**
          * 根据数据和索引去更新指定的表格行。
-         * @param id
+         * @param index
          * @param dt
          */
         updateRowView: function(index, dt) {
@@ -94,17 +105,24 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
 
             if(!data) return;
 
-            var $row = this.getRowByData(data);
+            var $row = this.getRowByData(data),
+                $newRow;
 
             if($row) {
                 // 合并数据
                 store.deepMix(data, dt);
 
                 // 构建新行，替换老行
-                var $tr = this._createRow(data);
-                $row.replaceWith($tr);
+                $newRow = this._createRow(data);
+                $row.replaceWith($newRow);
 
             }
+
+            this.fire('afterRowUpdate', {
+                data: data,
+                $row: $newRow,
+                $oldRow: $row
+            });
 
         },
         getRowByData: function(data) {
@@ -190,6 +208,17 @@ KISSY.add(function(S, Node, Event, XTemplate, Store, Column, Header, Footer) {
             column.bindEvent($wrap);
 
             return $wrap;
+        },
+        _createEmptyRow: function() {
+            var colspan = S.reduce(this.columns, function(rt, column) {
+                    return rt + column.getColspan();
+                }, 0),
+                html = S.substitute('<tr><td colspan="{colspan}">{html}</td></tr>', {
+                    colspan: colspan,
+                    html: this.cfg.emptyTemplate
+                });
+
+            return $(html);
         }
     });
 
