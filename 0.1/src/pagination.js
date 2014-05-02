@@ -71,7 +71,6 @@ KISSY.add(function(S, Node, XTemplate) {
             return new XTemplate(this.template).render(dt);
         },
         getLiteHTML: function(data) {
-            debugger;
             var dt = this.calPageData(data);
             return new XTemplate(this.liteTemplate).render(dt);
         },
