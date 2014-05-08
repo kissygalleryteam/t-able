@@ -26,7 +26,7 @@ KISSY.use('node,gallery/t-able/0.1/index', function(S, Node, TAble) {
 
     });
 
-    var pagination = new TAble.Pagination();
+    var pagination = new TAble.Pagination(lists.pagination);
 
     pagination.on('jump', function(ev) {
         var page = ev.to;
@@ -38,8 +38,6 @@ KISSY.use('node,gallery/t-able/0.1/index', function(S, Node, TAble) {
         adapter: function(data) {
             var paginationData = lists.pagination;
             data.colspan = columns.length;
-            data.current = paginationData.current;
-            data.totalRecord = paginationData.totalRecord;
             data.pagination = pagination.getHTML();
             return data;
         },
@@ -71,7 +69,7 @@ KISSY.use('node,gallery/t-able/0.1/index', function(S, Node, TAble) {
             });
             delete data.group;
 
-            data.pagination = pagination.getLiteHTML(lists.pagination);
+            data.pagination = pagination.getLiteHTML();
             return data;
 
         },
