@@ -652,14 +652,14 @@ KISSY.add('gallery/t-able/0.1/src/pagination',function(S, Node, XTemplate) {
             '</ul>',
         liteTemplate: '<ul class="pagination">' +
             '{{@if isFirst}}' +
-            '<li class="disabled"><span>&laquo; 上一页</span></li>' +
+            '<li class="disabled"><span>&laquo; <i class="txt">上一页</i></span></li>' +
             '{{else}}' +
-            '<li><a href="javascript:;" class="pn" data-value="{{current-1}}">&laquo; 上一页</a></li>' +
+            '<li><a href="javascript:;" class="pn" data-value="{{current-1}}">&laquo; <i class="txt">上一页</i></a></li>' +
             '{{/if}}' +
             '{{@if isLast}}' +
-            '<li class="disabled"><span>下一页 &raquo;</span></li>' +
+            '<li class="disabled"><span><i class="txt">下一页</i> &raquo;</span></li>' +
             '{{else}}' +
-            '<li><a href="javascript:;" class="pn" data-value="{{current+1}}">下一页 &raquo;</a></li>' +
+            '<li><a href="javascript:;" class="pn" data-value="{{current+1}}"><i class="txt">下一页</i> &raquo;</a></li>' +
             '{{/if}}' +
             '</ul>'
     };
@@ -696,6 +696,13 @@ KISSY.add('gallery/t-able/0.1/src/pagination',function(S, Node, XTemplate) {
                 to: value
             });
         },
+        getTotalPage: function(cfg) {
+            var cfg = S.merge(this.cfg, cfg),
+                totalRecord = cfg.totalRecord * 1,
+                pageSize = cfg.pageSize * 1;
+
+            return Math.ceil(totalRecord / pageSize);
+        },
         /**
          * 根据默认配置和现有的数据，计算出渲染模板所需要的数据。
          * @param config
@@ -709,12 +716,10 @@ KISSY.add('gallery/t-able/0.1/src/pagination',function(S, Node, XTemplate) {
         calPageData: function(config) {
             var cfg = S.merge(this.cfg, config),
                 current = cfg.current * 1,
-                totalRecord = cfg.totalRecord * 1,
-                pageSize = cfg.pageSize * 1,
                 padding = cfg.padding * 1,
                 getData = this._getPageData;
 
-            var totalPage = Math.ceil(totalRecord / pageSize);
+            var totalPage = this.getTotalPage(cfg);
 
             (current < 1) && (current = 1);
             (current > totalPage) && (current = totalPage);
