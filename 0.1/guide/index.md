@@ -134,7 +134,7 @@ pagination.getHTML({
     totalRecord: 123,
     pageSize: 30
 });
-// 触发jump事件。 默认在点击页码的时候会调用。
+// 触发jump事件。
 pagination.jumpTo(3);
 // 根据totalRecord和pageSize计算总页数
 pagination.getTotalPage();
