@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>t-able Demo</title>
+
+    <link rel="stylesheet" href="./index.css"/>
+    <script type="text/javascript" data-config="" src="http://g.tbcdn.cn/kissy/k/1.4.2/seed.js"></script>
+
+<body>
+
+<h2>基本调用</h2>
+
+<div id="grid"></div>
+
+<script>
+    KISSY.use('node, kg/t-able/2.0.0/index', function (S, Node, TAble) {
+        var $ = Node.all;
+
+        var columns = [
+            {
+                name: 'fullName',
+                width: 226
+            },
+            {
+                name: 'age',
+                width: 226
+                // 默认的模板是 "{{age}}"
+            },
+            {
+                name: 'score',
+                width: 226,
+                // 自定义模板
+                template: '<div style="color:{{@if score>60}}green{{else}}red{{/if}};">{{score}}</div>'
+            }
+        ];
+
+        var pagination = new TAble.Pagination({
+            // 当前页码
+            current: "3",
+            // 每页的数据量
+            pageSize: "5",
+            // 数据总条数
+            totalRecord: "20"
+        });
+
+        pagination.on('jump', function(ev) {
+            var page = ev.to;
+
+            alert('jump to page ' + page);
+        });
+
+        var header = new TAble.Header();
+
+        var footer = new TAble.Footer({
+            // 对渲染用的数据做修改。返回的数据用于渲染模板
+            adapter: function(data) {
+                data.colspan = columns.length;
+                data.pagination = pagination.getHTML();
+
+                return data;
+            },
+            // 模板渲染完成以后，会绑定事件到对应的元素上。
+            // 这里相当于 Event.on($(".pn", container), 'click', handler);
+            // container是指定的范围容器。所有的selector是在这个容器内生效的。
+            events: {
+                "click .pn": function(ev) {
+                    var $target = $(ev.currentTarget);
+                    var page = $target.attr('data-value');
+                    // 调用pagination组件实例的方法。
+                    pagination.jumpTo(page)
+                }
+            },
+            // 自定义模板
+            template: '<tr>' +
+                    '<td colspan="{{colspan}}">{{{pagination}}}</td>' +
+                    '</tr>'
+        });
+
+        var table = new TAble({
+            // 渲染到指定的容器内
+            parent: "#grid",
+            // 要求的数据。
+            // 默认三部分：rows是每一列渲染需要的数据。head是表格头渲染需要的数据。foot是页脚渲染需要的数据。默认会传递到Column/header/footer组件里。
+            data: {
+                rows: [
+                    // 每一项对应一行
+                    {
+                        fullName: "A name",
+                        age: "12",
+                        score: 50
+                    },
+                    {
+                        fullName: "B name",
+                        age: "12",
+                        score: 100
+                    },
+                    {
+                        fullName: "C name",
+                        age: "12",
+                        score: 70
+                    },
+                    {
+                        fullName: "D name",
+                        age: "12",
+                        score: 80
+                    }
+                ],
+                head: {
+                    // 表格头需要的数据。
+                    columns: [
+                        {
+                            caption: "full name"
+                        },
+                        {
+                            caption: "age"
+                        },
+                        {
+                            caption: "score"
+                        }
+                    ]
+                },
+                foot: {
+
+                }
+            },
+            columns: columns,
+            foot: footer,
+            head: header
+        });
+
+        // 初始化渲染
+        table.render();
+    })
+</script>
+
+</body>
+</html>

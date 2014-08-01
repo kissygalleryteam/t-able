@@ -1,0 +1,212 @@
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>t-able Demo</title>
+
+    <link rel="stylesheet" href="./index.css"/>
+    <script type="text/javascript" data-config="" src="http://g.tbcdn.cn/kissy/k/1.4.2/seed-min.js"></script>
+
+<body>
+
+<div id="wrap" class="container">
+
+    <div id="grid" class="items-table"></div>
+
+    <script type="text/javascript">
+        if (KISSY.Config.debug) {
+            var srcPath = "../../";
+            KISSY.config({
+                packages:[
+                    {
+                        name:"kg/t-able",
+                        path:srcPath,
+                        charset:"utf-8",
+                        ignorePackageNameInUri:true
+                    }
+                ]
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        // 模板map
+        var Columns = {
+            toggle: {
+                template: '<input type="checkbox" value="{{id}}" class="J_Checkbox" />'
+            },
+            image: {
+                template: '<a href="{{detailURL}}" target="_blank"><img src="{{image}}_80x80.jpg?t={{id}}" class="img-thumbnail" alt=""/></a>'
+            },
+            title: {
+                template: '<a href="{{detailURL}}" class="title" target="_blank">' +
+                        '{{title.prefix}}{{title.content}}{{title.suffix}}' +
+                        '</a>' +
+                        '{{@if icons.length>0}}' +
+                        '<div class="icon-flow">' +
+                        '<div class="icons">' +
+                        '{{@each icons}}' +
+                        '{{@if xindex<2}}' +
+                        '{{@if link}}' +
+                        '<a href="{{link}}" target="_blank">' +
+                        '{{/if}}' +
+                        '{{@if type==="vi"}}' +
+                        '<i class="vi J_Icon" data-name="{{name}}" data-id="{{id}}">{{text}}</i>' +
+                        '{{else}}' +
+                        '<img class="icon J_Icon" src="{{icon}}" data-name="{{name}}" data-id="{{id}}"/>' +
+                        '{{/if}}' +
+                        '{{@if link}}' +
+                        '</a>' +
+                        '{{/if}}' +
+                        '{{/if}}' +
+                        '{{/each}}' +
+                        '{{@if icons.length>2}}' +
+                        '<i class="caret"></i>' +
+                        '<div class="layer">' +
+                        '{{@each icons}}' +
+                        '{{@if xindex>=2}}' +
+                        '{{@if link}}' +
+                        '<a href="{{link}}" target="_blank">' +
+                        '{{/if}}' +
+                        '{{@if type==="vi"}}' +
+                        '<i class="vi J_Icon" data-name="{{name}}" data-id="{{id}}">{{text}}</i>' +
+                        '{{else}}' +
+                        '<img class="icon J_Icon" src="{{icon}}" data-name="{{name}}" data-id="{{id}}"/>' +
+                        '{{/if}}' +
+                        '{{@if link}}' +
+                        '</a>' +
+                        '{{/if}}' +
+                        '{{/if}}' +
+                        '{{/each}}' +
+                        '</div>' +
+                        '{{/if}}' +
+                        '</div>' +
+                        '</div>' +
+                        '{{@if outId}}' +
+                        '<div class="outer-id">商家编码：{{outId}}</div>' +
+                        '{{/if}}' +
+                        '{{/if}}'
+            },
+            sku: {
+                columns: ['price', 'quantity']
+            },
+            price: {
+                template: '<div class="text-price {{@if price.actual}} text-through{{/if}}">' +
+                        '{{@if price.min&&price.max}}' +
+                        '{{price.min}} ~ {{price.max}}' +
+                        '{{else}}' +
+                        '{{price.value}}' +
+                        '{{/if}}' +
+                        '</div>' +
+                        '{{@if price.actual}}' +
+                        '<div class="text-actual">' +
+                        '{{price.actual}}' +
+                        '</div>' +
+                        '{{/if}}'
+            },
+            quantity: {
+                template: '{{quantity.value}}'
+            },
+            saleQuantity: {
+                template: '{{saleQuantity}}'
+            },
+            status: {
+                template: '<span class="text-{{status.type}}">{{status.text}}</span>'
+            },
+            publishTime: {
+                template: '{{publishTime}}'
+            },
+            lastModify: {
+                template: '{{lastModify}}'
+            },
+            actions: {
+                template: '{{@each actions}}' +
+                        '{{@if disabled}}' +
+                        '<button type="button" disabled class="btn btn-default disabled">{{text}}</button>' +
+                        '{{else}}' +
+                        '{{@if action==="link"}}' +
+                        '<a href="{{url}}" target="_blank" class="btn btn-default">{{text}}</a>' +
+                        '{{/if}}' +
+                        '{{@if action==="copy"}}' +
+                        '<button type="button" class="btn btn-default J_ClipBoard" data-text="{{content}}">{{text}}</button>' +
+                        '{{/if}}' +
+                        '{{@if action==="confirmURL"}}' +
+                        '<button type="button" class="btn btn-default J_Confirm" data-url="{{url}}" data-msg="{{msg}}">{{text}}</button>' +
+                        '{{/if}}' +
+                        '{{@if action==="alert"}}' +
+                        '<button type="button" class="btn btn-default J_Alert" data-msg="{{msg}}">{{text}}</button>' +
+                        '{{/if}}' +
+                        '{{/if}}' +
+                        '{{/each}}'
+            }
+        };
+    </script>
+
+    <script type="text/javascript">
+        // 列配置。
+        var templates = [
+            {
+                name: 'toggle',
+                width: 18
+            },
+            {
+                name: 'image',
+                width: 102
+            },
+            {
+                name: 'title',
+                width: 226
+            },
+            {
+                name: 'sku',
+                columns: [
+                    {
+                        name: 'price',
+                        width: 110
+                    },
+                    {
+                        name: 'quantity',
+                        width: 94
+                    }
+                ]
+            },
+            {
+                name: 'saleQuantity',
+                width: 90
+            },
+            {
+                name: 'status',
+                width: 90
+            },
+            {
+                name: 'publishTime',
+                width: 93
+            },
+            {
+                name: 'lastModify',
+                width: 99
+            },
+            {
+                name: 'actions',
+                width: 123
+            }
+        ];
+    </script>
+
+    <script type="text/javascript">
+        var lists = {
+            "header": {
+                buttons: [{"text":"上架","formURL":"./auction_list.json?type=1","redirectURL":"","action":"up","permission":true,"messageVO":{"permission":"","confirm":""},"params":{"event_submit_do_execute_up_shelf":"1","action":"goodsmanager/GoodsUpShelfAction"}},{"text":"下架","formURL":"./auction_list.json?type=1","redirectURL":"","action":"off","permission":true,"messageVO":{"permission":"","confirm":""},"params":{"event_submit_do_execute_off_shelf":"1","action":"goodsmanager/GoodsOffShelfAction"}},{"text":"删除","formURL":"./auction_list.htm?type=1","redirectURL":"","action":"delete","permission":true,"messageVO":{"permission":"","confirm":""},"params":{"event_submit_do_execute_delete":"1","action":"goodsmanager/GoodsDeleteAction"}}],
+                group: [{"cells":["toggle","image","title"],"sort":"","name":"info","sortable":false,"caption":[{"selected":false,"text":"宝贝信息","value":""}]},{"cells":["price"],"sort":"","name":"price","sortable":true,"caption":[{"selected":false,"text":"价格(元)","value":""}]},{"cells":["quantity"],"sort":"","name":"quantity","sortable":true,"caption":[{"selected":false,"text":"总库存","value":""}]},{"cells":["saleQuantity"],"sort":"","name":"saleQuantity","sortable":true,"caption":[{"selected":false,"text":"总销量","value":""}]},{"cells":["status"],"sort":"","name":"status","sortable":false,"caption":[{"selected":true,"text":"出售中","value":"onSale"},{"selected":false,"text":"已下架","value":"offShelf"},{"selected":false,"text":"即将上架","value":"timmingShelf"}]},{"cells":["publishTime"],"sort":"desc","name":"publishTime","sortable":true,"caption":[{"selected":false,"text":"发布时间","value":""}]},{"cells":["lastModify"],"sort":"","name":"lastModify","sortable":true,"caption":[{"selected":false,"text":"最后编辑时间","value":""}]},{"cells":["actions"],"sort":"","name":"actions","sortable":false,"caption":[{"selected":false,"text":"操作","value":""}]}]
+            },
+            "pagination": {"current":"1","totalRecord":"205"},
+            "items": [{"skuVO":[],"lastModify":"2014-04-01 10:25","publishTime":"2014-04-08 10:25","status":{"text":"出售中","type":"success"},"iconsVO":[],"detailURL":"http://item.daily.taobao.net/item.htm?id=2102.0.02765029","image":"http://pics.taobao.com/bao/album/sys/icon/nopic.gif","sku":null,"id":"2102.0.02765029","editURL":"http://upload.daily.taobao.net/auction/publish/edit.htm?item_num_id=2102.0.02765029&auto=false","title":{"content":"【林睿测试】-聚财宝项目-发布-4月1号","prefix":"","suffix":"","editable":true,"size":""},"price":{"value":"1000.00","actual":"","editable":true},"saleQuantity":"0","quantity":{"value":"10000","increase":false,"editable":false},"icons":[{"icon":"http://img04.taobaocdn.com/tps/i4/T1ZHXLFaXcXXcfAj_X-16-15.png","text":"","link":"","name":"qrcode","fetchURL":"itemId=2102.0.02765029&cid=60056007&title=【林睿测试】-聚财宝项目-发布-4月1号","type":"icon"},{"icon":"http://gtms01.alicdn.com/tps/i1/T1dehpFxVcXXaXOi._-12.0.05.png","text":"","link":"","name":"","fetchURL":"","type":"icon"}],"hasSku":false,"actionsVO":[],"actions":[{"content":"http://item.daily.taobao.net/item.htm?id=2102.0.02765029","text":"复制链接","action":"copy","type":"","msg":"","disabled":false,"url":""},{"content":"","text":"编辑宝贝","action":"link","type":"","msg":"","disabled":false,"url":"http://upload.daily.taobao.net/auction/publish/edit.htm?item_num_id=2102.0.02765029&auto=false"}]},{"skuVO":[],"lastModify":"2014-03-11 10:08","publishTime":"2014-04-08 10:08","status":{"text":"出售中","type":"success"},"iconsVO":[],"detailURL":"http://item.daily.taobao.net/item.htm?id=2102.0.01106268","image":"http://pics.taobao.com/bao/album/sys/icon/nopic.gif","sku":null,"id":"2102.0.01106268","editURL":"http://upload.daily.taobao.net/auction/publish/edit.htm?item_num_id=2102.0.01106268&auto=false","title":{"content":"【林睿测试】-连衣裙-发布-top-2","prefix":"","suffix":"","editable":true,"size":""},"price":{"value":"177.00","actual":"","editable":true},"saleQuantity":"0","quantity":{"value":"30","increase":false,"editable":false},"icons":[{"icon":"http://img04.taobaocdn.com/tps/i4/T1ZHXLFaXcXXcfAj_X-16-15.png","text":"","link":"","name":"qrcode","fetchURL":"itemId=2102.0.01106268&cid=52.0.00850&title=【林睿测试】-连衣裙-发布-top-2","type":"icon"},{"icon":"http://gtms01.alicdn.com/tps/i1/T1dehpFxVcXXaXOi._-12.0.05.png","text":"","link":"","name":"","fetchURL":"","type":"icon"}],"hasSku":false,"actionsVO":[],"actions":[{"content":"http://item.daily.taobao.net/item.htm?id=2102.0.01106268","text":"复制链接","action":"copy","type":"","msg":"","disabled":false,"url":""},{"content":"","text":"编辑宝贝","action":"link","type":"","msg":"","disabled":false,"url":"http://upload.daily.taobao.net/auction/publish/edit.htm?item_num_id=2102.0.01106268&auto=false"}]}]
+        }
+
+    </script>
+    <script type="text/javascript" src="./test.js"></script>
+</div>
+
+</body>
+</html>
